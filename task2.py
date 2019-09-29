@@ -1,21 +1,19 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-def add_noise(img, rate=5):
-    img[::rate, ::rate, :] = 1
-    return
-
-
-def get_kernel(windos_size):
-    kernel = np.ones((windos_size, windos_size))
-    kernel/=kernel.sum()
-    return kernel
+def gauss_kernel(size = 5, sigma = 3):
+    center = (int)(size / 2)
+    kernel = np.zeros((size, size))
+    for i in range(size):
+        for j in range(size):
+            diff = np.sqrt((i - center) ** 2 + (j - center) ** 2)
+            kernel[i, j] = np.exp(-(diff ** 2) / (2 * sigma ** 2))
+    return kernel / np.sum(kernel)
 
 
 def filter(img, window_size=3):
     img2 = np.zeros_like(img)
-    kernel = get_kernel(window_size)
+    kernel = gauss_kernel(window_size)
     p = window_size//2
     for k in range(img.shape[2]): # foreach color channel
         for i in range(p, img.shape[0]-p): # foreach row
@@ -24,10 +22,8 @@ def filter(img, window_size=3):
                 img2[i,j,k] = (kernel*window).sum()
     return img2
 
-
 def main():
-    img = plt.imread("img.png")[:, :, :3]
-    add_noise(img)
+    img = plt.imread("H:\\git\\2019_IT\\Snail.png")[:, :, :3] #file
     img2 = filter(img)
 
     fig, axs = plt.subplots(1,2)
