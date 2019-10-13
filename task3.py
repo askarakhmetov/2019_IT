@@ -13,14 +13,20 @@ def get_indices(N, n_batches, split_ratio):
     Returns:
         generator for batch indices [i, j, k]
     """
+    #shag = N//(n_batches*2)+1
+    shag = np.ceil(N/(n_batches*2)) + 1
     inds = np.array([0, 0, 0])
     for i in range(n_batches):
-        # todo: move forward batch
-        # calculate new indices
+        if i == (n_batches-1) and ((0+(i)*shag)+(shag/split_ratio)+shag)!=(N-1):
+            tmp=shag+1
+            inds=[N-1-tmp-tmp/split_ratio,N-1-tmp, N-1]
+        else:
+            inds=[(i)*shag, ((0+(i)*shag)+(shag/split_ratio)), ((0+(i)*shag)+(shag/split_ratio)+shag)]
+
         yield inds
 
 def main():
-    for inds in get_indices(100, 5, 0.25):
+    for inds in get_indices(10, 5, 0.25):
         print(inds)
     # expected result:
     # [0, 44, 55]
